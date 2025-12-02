@@ -10,7 +10,7 @@ namespace Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD
     public class Program
     {
         public static void Main(string[] args)
-        {
+        { 
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
@@ -67,6 +67,7 @@ namespace Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD
             app.MapAdditionalIdentityEndpoints();
 
             app.Run();
+
         }
     }
 }
