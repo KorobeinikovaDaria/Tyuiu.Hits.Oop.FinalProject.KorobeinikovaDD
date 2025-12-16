@@ -6,12 +6,12 @@
 @inject NavigationManager navigate
 
 
-<EditForm Model="Course" FormName="TaskForm" OnValidSubmit="ValidSubmit">
+<EditForm Model="Course" FormName="CourseForm" OnValidSubmit="ValidSubmit">
     <DataAnnotationsValidator></DataAnnotationsValidator>
     <ValidationSummary></ValidationSummary>
 
-    <h2>Создать курс</h2>
-    <InputNumber @bind-Value="Course.Id" hidden />
+    <h2>Форма курса</h2>
+    <InputNumber @bind-Value="Course.Id"hidden />
 
     <div class="form-group d-flex justify-content-between">
         <label class="col-form-label col-3">Заголовок</label>
@@ -34,6 +34,7 @@
     <div class="btn-group">
         <button class="btn btn-primary" type="submit">Сохранить</button>
         <a class="btn btn-secondary" href="/">Отмена</a>
+        <a class="btn btn-success" href="@($"/lessonForm/{Course.Id}")">Добавить урок</a>
     </div>
 
 </EditForm>
@@ -59,14 +60,12 @@
                 Course.Name = src.Name;
                 Course.Description = src.Description;
                 Course.FinishDate = src.FinishDate;
-                Course.Level = 0;
-                Course.StartDate = DateTime.Now;
             }
         }
     }
     async Task ValidSubmit()
     {
         await data.SaveAsync(Course!);
-        navigate.NavigateTo("/courses");
+        navigate.NavigateTo("/courses"); // или navigate.NavigateTo($"/courses/{Lesson.CourseId}") если нужно вернуться к курсу
     }
 }

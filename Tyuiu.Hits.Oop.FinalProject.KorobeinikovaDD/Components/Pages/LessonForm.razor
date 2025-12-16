@@ -1,5 +1,69 @@
-﻿<h3>LessonForm</h3>
+﻿@page "/lessonForm/{CourseId:int}"
+@using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Interfaces
+@using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Models
+@using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Services
+
+@inject ILessonService data
+@inject NavigationManager navigate
+
+<h3>Форма урока</h3>
+
+<EditForm Model="Lesson" FormName="LessonForm" OnValidSubmit="ValidSubmit">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+     <ValidationSummary></ValidationSummary>
+
+    <InputNumber @bind-Value="Lesson.CourseId" hidden />
+
+    <div class="form-group d-flex justify-content-between">
+        <label class="col-form-label col-3">Заголовок</label>
+        <InputText @bind-Value="Lesson.Title" class="form-control" />
+        <ValidationMessage For="@(() => Lesson.Title)" />
+    </div>
+
+    <div class="form-group d-flex justify-content-between">
+        <label class="col-form-label col-3">Содержание</label>
+        <InputTextArea @bind-Value="Lesson.Content" class="form-control" />
+        <ValidationMessage For="@(() => Lesson.Content)" />
+    </div>
+
+    <div class="btn-group">
+        <button class="btn btn-primary" type="submit">Сохранить</button>
+        <a class="btn btn-secondary" href="/courses">Отмена</a>
+    </div>
+</EditForm>
 
 @code {
+    [Parameter]
+    public int CourseId { get; set; } 
+
+    public int Id { get; set; }
+
+    [SupplyParameterFromForm]
+    Lesson? Lesson { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        if (Lesson == null)
+        {
+            Lesson = new();
+            Lesson.CourseId = CourseId;
+            if (Id != 0)
+            {
+                var src = await data.GetTaskAsync(Id);
+                Lesson.Id = src.Id;
+                Lesson.Title = src.Title;
+                Lesson.Content = src.Content;
+            }
+        }
+    }
+
+    async Task ValidSubmit()
+    {
+        await data.SaveAsync(Lesson!);
+        navigate.NavigateTo("/courses"); // или navigate.NavigateTo($"/courses/{Lesson.CourseId}") если нужно вернуться к курсу
+    }
 
 }
+

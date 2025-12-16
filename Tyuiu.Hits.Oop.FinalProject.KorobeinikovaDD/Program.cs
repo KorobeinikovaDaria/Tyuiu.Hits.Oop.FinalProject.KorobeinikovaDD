@@ -13,6 +13,8 @@ using System;
 using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Components;
 using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Components.Account;
 using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data;
+using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Interfaces;
+using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Services;
 using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Services;
 using static ICourseService;
 
@@ -38,6 +40,7 @@ public class Program
 
         // Регистрация сервисов приложения
         builder.Services.AddScoped<ICourseService, CourseService>();
+        builder.Services.AddScoped<ILessonService, LessonService>();
 
         builder.Services.AddCascadingAuthenticationState();
         builder.Services.AddScoped<IdentityUserAccessor>();
