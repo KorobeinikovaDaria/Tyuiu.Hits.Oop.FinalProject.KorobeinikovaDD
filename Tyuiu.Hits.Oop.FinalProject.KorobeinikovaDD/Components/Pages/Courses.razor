@@ -32,15 +32,16 @@
                     </div>
 
                     <div class="card-footer">
-                        <a class="btn btn-primary" href="lessons">Подробнее</a>
-                        <a class="btn btn-primary" href="courseform/@course.Id">Изменить</a>
-                        <button class="btn btn-primary" @onclick="async () => await DeleteTask(course.Id)">Удалить</button>
+                        <a class="btn btn-detail" href="lessons">Подробнее</a>
+                        <a class="btn btn-edit" href="courseform/@course.Id">Изменить</a>
+                        <button class="btn btn-danger" @onclick="async () => await DeleteTask(course.Id)">Удалить</button>
                     </div>
+
                 </div>
             }
         </div>
         <div class="btn-group m-2">
-            <a class="btn btn-primary" href="courseform/add">Создать новый курс</a>
+            <a class="btn btn-edit" href="courseform/add">Создать новый курс</a>
         </div>
     }
 </div>

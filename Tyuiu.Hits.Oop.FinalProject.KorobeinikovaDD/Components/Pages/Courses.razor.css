@@ -12,6 +12,9 @@
 }
 
 .card-group {
+    display: flex; /* Используем Flexbox для выравнивания карточек */
+    flex-wrap: wrap; /* Позволяем карточкам переноситься на новую строку */
+    justify-content: flex-start; /* Выравнивание по левому краю */
 }
 
 .card {
@@ -20,12 +23,22 @@
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s;
-    width: 400px;
+    width: calc(33.333% - 20px);
+    min-width: 400px;
+    max-width: 400px;
+    margin: 10px; /* Добавляем отступы между карточками */
 }
 
     .card:hover {
         transform: translateY(-5px); /* Эффект при наведении */
     }
+
+@media (max-width:400x) {
+    .card {
+        width: calc(50% - 20px); /* Уменьшаем ширину карточек на меньших экранах */
+    }
+}
+
 
 .card-header {
     background-color: #09adc2;
@@ -50,9 +63,8 @@
     background-color: #09adc2;
     color: white;
     border: none;
-    padding: 10px 15px;
+    padding: 10px 20px;
     border-radius: 5px;
-    margin: 5px;
     text-decoration: none; /* Убираем подчеркивание для ссылок */
 }
 
@@ -63,3 +75,26 @@
 .btn-group {
     margin-top: 20px; /* Отступ сверху для группы кнопок */
 }
+
+.btn-edit {
+    background-color: #28a745; /* Зеленый цвет для кнопки "Изменить" */
+    border-color: #28a745; /* Цвет границы для кнопки "Изменить" */
+    color: white; /* Цвет текста для кнопки "Изменить" */
+}
+
+    .btn-edit:hover {
+        background-color: #218838; /* Темнее для эффекта наведения на кнопку "Изменить" */
+        border-color: #1e7e34; /* Темнее для границы при наведении на кнопку "Изменить" */
+    }
+
+.btn-danger {
+    background-color: #dc3545; /* Красный цвет для кнопки "Удалить" */
+    border-color: #dc3545; /* Цвет границы для кнопки "Удалить" */
+    color: white; /* Цвет текста для кнопки "Удалить" */
+}
+
+    .btn-danger:hover {
+        background-color: #c82333; /* Темнее для эффекта наведения на кнопку "Удалить" */
+        border-color: #bd2130; /* Темнее для границы при наведении на кнопку "Удалить" */
+    }
+
