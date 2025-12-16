@@ -1,0 +1,70 @@
+﻿@page "/courseform/add"
+@page "/courseform/{Id:int}"
+@using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Models
+
+@inject ICourseService data
+@inject NavigationManager navigate
+
+
+<EditForm Model="Course" FormName="TaskForm" OnValidSubmit="ValidSubmit">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <ValidationSummary></ValidationSummary>
+
+    <h2>Создать курс</h2>
+    <InputNumber @bind-Value="Course.Id" hidden />
+
+    <div class="form-group d-flex justify-content-between">
+        <label class="col-form-label col-3">Заголовок</label>
+        <InputText @bind-Value="Course.Name" class="form-control" />
+        <ValidationMessage For="@(() => Course.Name)" />
+    </div>
+
+    <div class="form-group d-flex justify-content-between">
+        <label class="col-form-label col-3">Описание</label>
+        <InputTextArea @bind-Value="Course.Description" class="form-control" />
+        <ValidationMessage For="@(() => Course.Description)" />
+    </div>
+
+    <div class="form-group d-flex justify-content-between">
+        <label class="col-form-label col-3">Дата окончания</label>
+        <InputDate @bind-Value="Course.FinishDate" class="form-control" />
+        <ValidationMessage For="@(() => Course.FinishDate)" />
+    </div>
+
+    <div class="btn-group">
+        <button class="btn btn-primary" type="submit">Сохранить</button>
+        <a class="btn btn-secondary" href="/">Отмена</a>
+    </div>
+
+</EditForm>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    [SupplyParameterFromForm]
+    Course? Course { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        if (Course == null)
+        {
+            Course = new();
+            if (Id != 0)
+            {
+                var src = await data.GetTaskAsync(Id);
+                Course.Id = src.Id;
+                Course.Name = src.Name;
+                Course.Description = src.Description;
+                Course.FinishDate = src.FinishDate;
+            }
+        }
+    }
+    async Task ValidSubmit()
+    {
+        await data.SaveAsync(Course!);
+        navigate.NavigateTo("/courses");
+    }
+}

@@ -16,7 +16,7 @@ namespace Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder); // Важно вызвать базовый метод
+            base.OnModelCreating(modelBuilder); 
 
             modelBuilder.Entity<Course>()
                 .HasMany(c => c.Lessons)

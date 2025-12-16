@@ -1,5 +1,59 @@
-﻿<h3>Courses</h3>
+﻿@page "/courses"
+@using System.Linq
+@using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Models
+@inject ICourseService data
+
+<PageTitle>Задачи</PageTitle>
+
+<h1>Мои задачи</h1>
+
+<div class="container">
+    @if (courses == null)
+    {
+        <tr>
+            <td colspan="5">Loading ...</td>
+        </tr>
+    }
+    else
+    {
+        
+        <div class="card-group">
+            @foreach (var course in courses)
+            {
+                <div class="card">
+                    <div class="card-header">
+                        @course.Name
+                    </div>
+                    <div class="card-body">
+                        <p>@course.Description</p>
+                    </div>
+
+                    <div class="card-footer">
+                        <a class="btn btn-primary" href="lessons">Подробнее</a>
+                        <a class="btn btn-primary" href="courseform/@course.Id">Изменить</a>
+                        <button class="btn btn-primary" @onclick="async () => await DeleteTask(course.Id)">Удалить</button>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="btn-group m-2">
+            <a class="btn btn-primary" href="courseform/add">Создать новый курс</a>
+        </div>
+    }
+</div>
 
 @code {
+    IEnumerable<Course>? courses;
 
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        courses = await data.GetTaskItemsAsync();
+    }
+
+    async Task DeleteTask(int id)
+    {
+        await data.DeleteAsync(id);
+        courses = await data.GetTaskItemsAsync();
+    }
 }

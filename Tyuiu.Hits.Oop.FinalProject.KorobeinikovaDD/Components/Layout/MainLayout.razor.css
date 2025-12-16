@@ -9,11 +9,25 @@ main {
 }
 
 .sidebar {
-    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    background: #09adc2;
+    height: 100%;
+    background-attachment: fixed;
+    color: #fff;
+    border-block-color: black;
+    border-width: initial;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow: hidden;
+    z-index: 80;
+    transition: transform var(--transition-fast) ease, width var(--transition-fast) ease, box-shadow .2s ease;
+    will-change: transform, left;
 }
 
 .top-row {
-    background-color: #f7f7f7;
+    background-color: #09adc2;
     border-bottom: 1px solid #d6d5d5;
     justify-content: flex-end;
     height: 3.5rem;
