@@ -1,11 +1,14 @@
-﻿@page "/courses"
-@using System.Linq
+﻿@using System.Linq﻿
+
+@page "/courses"
+
 @using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Models
 @inject ICourseService data
+@rendermode InteractiveServer
 
-<PageTitle>Задачи</PageTitle>
+<PageTitle>Курсы</PageTitle>
 
-<h1>Мои задачи</h1>
+<h1>Список доступных курсов</h1>
 
 <div class="container">
     @if (courses == null)
