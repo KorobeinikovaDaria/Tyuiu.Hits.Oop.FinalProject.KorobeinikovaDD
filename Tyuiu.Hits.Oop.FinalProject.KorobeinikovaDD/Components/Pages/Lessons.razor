@@ -5,6 +5,7 @@
 
 @inject ILessonService data
 @inject NavigationManager navigate
+@rendermode InteractiveServer
 
 <h3>Уроки курса</h3>
 
@@ -18,7 +19,7 @@ else if (lessons.Count == 0)
 }
 else
 {
-    <div class="card-group">
+    
         @foreach (var lesson in lessons)
         {
             <div class="card">
@@ -34,10 +35,10 @@ else
                 </div>
             </div>
         }
-    </div>
+    
 }
 <div class="btn-group m-2">
-    <a class="btn btn-success" href="@($"/lessonForm/{CourseId}")">Добавить урок</a>
+    <a class="btn btn-edit" href="@($"/lessonForm/{CourseId}")">Добавить урок</a>
     <a class="btn btn-detail" href="/courses">Назад к курсам</a>
 </div>
 
