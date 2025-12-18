@@ -1,5 +1,61 @@
-﻿<h3>Lessons</h3>
+﻿@page "/lessons/{CourseId:int}"
+@using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Interfaces
+@using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Models
+@using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Services
+
+@inject ILessonService data
+@inject NavigationManager navigate
+
+<h3>Уроки курса</h3>
+
+@if (lessons == null)
+{
+    <p><em>Загрузка...</em></p>
+}
+else if (lessons.Count == 0)
+{   
+    <p><em>Нет доступных уроков для этого курса.</em></p>
+}
+else
+{
+    <div class="card-group">
+        @foreach (var lesson in lessons)
+        {
+            <div class="card">
+                <div class="card-header">
+                    @lesson.Title
+                </div>
+                <div class="card-body">
+                    <p>@lesson.Content</p>
+                </div>
+                <div class="card-footer">
+                    <a class="btn btn-edit" href="/lessonForm/@lesson.CourseId/@lesson.Id">Изменить</a>
+                    <button class="btn btn-danger" @onclick="async () => await DeleteLesson(lesson.Id)">Удалить</button>
+                </div>
+            </div>
+        }
+    </div>
+}
+<div class="btn-group m-2">
+    <a class="btn btn-success" href="@($"/lessonForm/{CourseId}")">Добавить урок</a>
+    <a class="btn btn-detail" href="/courses">Назад к курсам</a>
+</div>
 
 @code {
+    [Parameter] 
+    public int CourseId { get; set; }
 
+    private List<Lesson>? lessons;
+
+    protected override async Task OnInitializedAsync()
+    {
+        lessons = await data.GetLessonsByCourseIdAsync(CourseId);
+    }
+
+    async Task DeleteLesson(int id)
+    {
+        await data.DeleteAsync(id);
+        lessons = await data.GetLessonsByCourseIdAsync(CourseId);
+    }
 }
+

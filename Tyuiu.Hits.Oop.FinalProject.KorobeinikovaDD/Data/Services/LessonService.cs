@@ -6,13 +6,16 @@ namespace Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Services
 {
     public class LessonService(ApplicationDbContext context) : ILessonService
     {
-  
-            public async Task<IEnumerable<Lesson>> GetTaskItemsAsync()
-            {
-                return await context.Lessons.ToArrayAsync();
-            }
 
-            public async Task SaveAsync(Lesson item)
+        public async Task<List<Lesson>> GetLessonsByCourseIdAsync(int courseId)
+        {
+            return await context.Lessons
+                .Where(lesson => lesson.CourseId == courseId)
+                .ToListAsync(); // Здесь мы получаем List<Lesson>
+        }
+
+
+        public async Task SaveAsync(Lesson item)
             {
                 if (item.Id == 0)
                 {

@@ -1,4 +1,7 @@
 ﻿@page "/lessonForm/{CourseId:int}"
+@page "/lessonForm/{CourseId:int}/{Id:int}"
+
+
 @using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Interfaces
 @using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Models
 @using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Services
@@ -13,6 +16,7 @@
      <ValidationSummary></ValidationSummary>
 
     <InputNumber @bind-Value="Lesson.CourseId" hidden />
+    <InputNumber @bind-Value="Lesson.Id" hidden />
 
     <div class="form-group d-flex justify-content-between">
         <label class="col-form-label col-3">Заголовок</label>
@@ -36,6 +40,7 @@
     [Parameter]
     public int CourseId { get; set; } 
 
+    [Parameter]
     public int Id { get; set; }
 
     [SupplyParameterFromForm]

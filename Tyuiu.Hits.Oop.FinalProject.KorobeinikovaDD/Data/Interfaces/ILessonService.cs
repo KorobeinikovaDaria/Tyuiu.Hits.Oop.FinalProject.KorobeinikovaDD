@@ -4,7 +4,7 @@ namespace Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Interfaces
 {
     public interface ILessonService
     {
-        Task<IEnumerable<Lesson>> GetTaskItemsAsync();
+        Task<List<Lesson>> GetLessonsByCourseIdAsync(int courseId);
         Task SaveAsync(Lesson item);
 
         Task<Lesson> GetTaskAsync(int id);

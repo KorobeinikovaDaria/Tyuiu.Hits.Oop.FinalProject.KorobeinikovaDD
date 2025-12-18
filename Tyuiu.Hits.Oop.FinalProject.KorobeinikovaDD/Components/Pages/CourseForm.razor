@@ -33,8 +33,7 @@
 
     <div class="btn-group">
         <button class="btn btn-primary" type="submit">Сохранить</button>
-        <a class="btn btn-secondary" href="/">Отмена</a>
-        <a class="btn btn-success" href="@($"/lessonForm/{Course.Id}")">Добавить урок</a>
+        <a class="btn btn-secondary" href="/courses">Отмена</a>
     </div>
 
 </EditForm>
@@ -66,6 +65,6 @@
     async Task ValidSubmit()
     {
         await data.SaveAsync(Course!);
-        navigate.NavigateTo("/courses"); // или navigate.NavigateTo($"/courses/{Lesson.CourseId}") если нужно вернуться к курсу
+        navigate.NavigateTo("/courses"); 
     }
 }
