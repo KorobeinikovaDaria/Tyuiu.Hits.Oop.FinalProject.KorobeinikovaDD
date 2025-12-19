@@ -1,6 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Components.Pages;
 
 namespace Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Models
 {
@@ -20,5 +21,6 @@ namespace Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Models
         public int Level { get; set; }
 
         public ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();
+        public ICollection<Tests> Tests { get; set; }
     }
 }

@@ -1,0 +1,80 @@
+﻿@page "/TestForm/{CourseId:int}"
+@page "/TestForm/{CourseId:int}/{Id:int}"
+
+@inject ITestService data
+@using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Interfaces
+@using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Models
+@using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Services
+
+@inject NavigationManager navigate
+
+<h3>Форма вопроса</h3>
+
+<EditForm Model="Test" FormName="TestForm" OnValidSubmit="ValidSubmit">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <ValidationSummary></ValidationSummary>
+
+    <InputNumber @bind-Value="Test.CourseId" hidden />
+    <InputNumber @bind-Value="Test.Id" hidden />
+
+    <div class="form-group d-flex justify-content-between">
+        <label class="col-form-label col-3">Вопрос</label>
+        <InputText @bind-Value="Test.Question" class="form-control" />
+        <ValidationMessage For="@(() => Test.Question)" />
+    </div>
+
+    <div class="form-group d-flex justify-content-between">
+        <label class="col-form-label col-3">Правильный ответ</label>
+        <InputTextArea @bind-Value="Test.TrueAnswer" class="form-control" />
+        <ValidationMessage For="@(() => Test.TrueAnswer)" />
+    </div>
+
+    <div class="form-group d-flex justify-content-between">
+        <label class="col-form-label col-3">Неправильный ответ</label>
+        <InputTextArea @bind-Value="Test.FalseAnswer" class="form-control" />
+        <ValidationMessage For="@(() => Test.FalseAnswer)" />
+    </div>
+
+    <div class="btn-group">
+        <button class="btn btn-primary" type="submit">Сохранить</button>
+        <a class="btn btn-secondary" href="@($"/Test/{CourseId}")">Отмена</a>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int CourseId { get; set; }
+
+    [Parameter]
+    public int Id { get; set; }
+
+    [SupplyParameterFromForm]
+    Tests? Test { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        if (Test == null)
+        {
+            Test = new();
+            Test.CourseId = CourseId;
+            if (Id != 0)
+            {
+                var src = await data.GetTaskAsync(Id);
+                Test.Id = src.Id;
+                Test.Question = src.Question;
+                Test.TrueAnswer = src.TrueAnswer;
+                Test.FalseAnswer = src.FalseAnswer;
+            }
+        }
+    }
+
+    async Task ValidSubmit()
+    {
+        await data.SaveAsync(Test!);
+        navigate.NavigateTo($"/Test/{CourseId}");
+    }
+
+}
+

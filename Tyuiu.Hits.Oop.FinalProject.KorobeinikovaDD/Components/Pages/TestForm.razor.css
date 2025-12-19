@@ -1,0 +1,50 @@
+﻿h2 {
+    font-family: 'Arial', sans-serif;
+    color: #333;
+}
+
+.form-group {
+    position: relative;
+    margin: 20px;
+}
+
+.col-form-label {
+    font-weight: bold;
+    color: #555;
+}
+
+.form-control {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: border-color 0.3s;
+    margin: 15px;
+}
+
+    .form-control:focus {
+        border-color: #007bff; /* Цвет рамки при фокусе */
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Легкая тень при фокусе */
+    }
+
+.btn-primary {
+    background-color: #7ad761;
+    border-color: #7ad761;
+    margin: 6px;
+}
+
+    .btn-primary:hover {
+        background-color: #3f9e26; /* Цвет кнопки при наведении */
+    }
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    margin: 6px;
+}
+
+    .btn-secondary:hover {
+        background-color: #5a6268; /* Цвет кнопки "Отмена" при наведении */
+    }
+
+.text-danger {
+    font-size: 0.875rem; /* Уменьшаем размер текста для сообщений об ошибках */
+}

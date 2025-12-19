@@ -1,10 +1,15 @@
 ﻿@page "/lessons/{CourseId:int}"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
 @using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Interfaces
 @using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Models
 @using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Services
 
 @inject ILessonService data
 @inject NavigationManager navigate
+@inject AuthenticationStateProvider AuthStateProvider
+
+@attribute [Authorize]
 @rendermode InteractiveServer
 
 <h3>Уроки курса</h3>
@@ -18,27 +23,48 @@ else if (lessons.Count == 0)
     <p><em>Нет доступных уроков для этого курса.</em></p>
 }
 else
-{
-    
-        @foreach (var lesson in lessons)
-        {
-            <div class="card">
-                <div class="card-header">
-                    @lesson.Title
-                </div>
-                <div class="card-body">
-                    <p>@lesson.Content</p>
-                </div>
-                <div class="card-footer">
-                    <a class="btn btn-edit" href="/lessonForm/@lesson.CourseId/@lesson.Id">Изменить</a>
-                    <button class="btn btn-danger" @onclick="async () => await DeleteLesson(lesson.Id)">Удалить</button>
-                </div>
+{    
+    @foreach (var lesson in lessons)
+    {
+        <div class="card mb-3">
+            <div class="card-header">
+                @lesson.Title
             </div>
-        }
-    
+            <div class="card-body">
+                <p>@lesson.Content</p>
+            </div>
+            <div class="card-footer">
+                @* Кнопка "Изменить" и "Удалить" — только для Teacher *@
+                <AuthorizeView Roles="Teacher">
+                    <Authorized>
+                        <a class="btn btn-edit ms-2" href="/lessonForm/@lesson.CourseId/@lesson.Id">Изменить</a>
+                        <button class="btn btn-danger ms-2" @onclick="async () => await DeleteLesson(lesson.Id)">Удалить</button>
+                    </Authorized>
+                </AuthorizeView>
+            </div>
+        </div>
+    }
 }
+
 <div class="btn-group m-2">
-    <a class="btn btn-edit" href="@($"/lessonForm/{CourseId}")">Добавить урок</a>
+    @* Добавление урока — только для Teacher *@
+    <AuthorizeView Roles="Teacher">
+        <Authorized>
+            <a class="btn btn-edit" href="@($"/lessonForm/{CourseId}")">Добавить урок</a>
+        </Authorized>
+    </AuthorizeView>
+
+    <AuthorizeView Roles="Teacher">
+        <Authorized>
+            <a class="btn " href="@($"/Test/{CourseId}")">Посмотреть тест</a>
+        </Authorized>
+    </AuthorizeView>
+
+    <AuthorizeView Roles="Student">
+        <Authorized>
+            <a class="btn " href="@($"/Test/{CourseId}")">Пройти итоговый тест</a>
+        </Authorized>
+    </AuthorizeView>
     <a class="btn btn-detail" href="/courses">Назад к курсам</a>
 </div>
 
@@ -59,4 +85,5 @@ else
         lessons = await data.GetLessonsByCourseIdAsync(CourseId);
     }
 }
+
 

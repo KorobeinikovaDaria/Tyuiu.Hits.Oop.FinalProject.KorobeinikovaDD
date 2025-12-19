@@ -1,0 +1,136 @@
+﻿@page "/Test/{CourseId:int}"
+@using Microsoft.AspNetCore.Authorization
+@using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data
+@using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Interfaces
+@using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Models
+
+@using Microsoft.EntityFrameworkCore
+@using System.Linq
+@using System.Collections.Generic
+
+@inject ITestService data
+
+@attribute [Authorize]
+@rendermode InteractiveServer
+
+<div class="test-page">
+    <h1>Итоговый тест</h1>
+
+    @if (Tests != null && Tests.Count > 0)
+    {
+        @foreach (var test in Tests)
+        {
+            <div class="question-card">
+                <p class="question-text">@test.Question</p>
+
+                <div class="options">
+                    <label class="option">
+                        <input type="radio"
+                               name="@($"q{test.Id}")"
+                               @onclick="() => OnSelected(test.Id, 1)"
+                               checked="@(SelectedAnswers.ContainsKey(test.Id) && SelectedAnswers[test.Id] == 1)" />
+                        <span class="option-inner">
+                            <span class="dot"></span>
+                            <span class="option-text">@test.TrueAnswer</span>
+                        </span>
+                    </label>
+
+                    <label class="option">
+                        <input type="radio"
+                               name="@($"q{test.Id}")"
+                               @onclick="() => OnSelected(test.Id, 0)"
+                               checked="@(SelectedAnswers.ContainsKey(test.Id) && SelectedAnswers[test.Id] == 0)" />
+                        <span class="option-inner">
+                            <span class="dot"></span>
+                            <span class="option-text">@test.FalseAnswer</span>
+                        </span>
+                    </label>
+                </div>
+
+                <div style="margin-top:12px;">
+                    <AuthorizeView Roles="Teacher">
+                        <Authorized>
+                            <a class="btn-edit" href="/TestForm/@test.CourseId/@test.Id">Изменить</a>
+                            <button class="btn-danger ms-2" @onclick="async () => await DeleteTest(test.Id)">Удалить</button>
+                        </Authorized>
+                    </AuthorizeView>
+                </div>
+            </div>
+        }
+
+        <div class="controls">
+            <AuthorizeView Roles="Student">
+                <Authorized>
+                    <button class="btn-primary" @onclick="CalculateResults">Получить результаты</button>
+                </Authorized>
+            </AuthorizeView>
+
+            <AuthorizeView Roles="Teacher">
+                <Authorized>
+                    <a class="btn-edit" href="@($"/TestForm/{CourseId}")">Добавить вопрос</a>
+                </Authorized>
+            </AuthorizeView>
+
+            <a class="btn btn-detail" href="@($"/lessons/{CourseId}")">Назад</a>
+        </div>
+    }
+    else
+    {
+        <p>Нет доступных тестов.</p>
+        <AuthorizeView Roles="Teacher">
+            <Authorized>
+                <a class="btn-edit" href="@($"/TestForm/{CourseId}")">Создать тест?</a>
+            </Authorized>
+        </AuthorizeView>
+    }
+
+    @if (ShowResult)
+    {
+        <div class="result-box">
+            <div>Ваш результат:</div>
+            <div class="result-score">@Score из @(Tests?.Count ?? 0)</div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int CourseId { get; set; }
+
+    public List<Tests>? Tests { get; set; }
+
+    // выбранные ответы: ключ = id вопроса, значение = 1 (True) или 0 (False)
+    private Dictionary<int, int> SelectedAnswers { get; set; } = new();
+
+    public int Score { get; set; }
+    private bool ShowResult { get; set; }
+
+    // GET: загрузка тестов курса
+    protected override async Task OnInitializedAsync()
+    {
+        Tests = await data.GetLessonsByCourseIdAsync(CourseId);
+    }
+
+    async Task DeleteTest(int id)
+    {
+        await data.DeleteAsync(id);
+        Tests = await data.GetLessonsByCourseIdAsync(CourseId);
+    }
+
+    // ставим выбранный ответ
+    void OnSelected(int testId, int value)
+    {
+        SelectedAnswers[testId] = value;
+        // скрываем прошлый результат, если пользователь меняет ответы до повторного нажатия
+        ShowResult = false;
+        StateHasChanged(); // обновляем UI
+    }
+
+    // подсчёт очков по текущим выбранным ответам
+    void CalculateResults()
+    {
+        // TrueAnswer даётся, если пользователь выбрал значение 1
+        Score = SelectedAnswers.Values.Count(v => v == 1);
+        ShowResult = true;
+    }
+}

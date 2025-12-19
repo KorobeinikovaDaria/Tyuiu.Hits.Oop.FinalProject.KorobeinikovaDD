@@ -8,7 +8,7 @@ namespace Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Models
 
         [Required]
         public string? Title { get; set; }
-
+        [Required]
         public string? Content { get; set; }
 
         public int CourseId { get; set; } 

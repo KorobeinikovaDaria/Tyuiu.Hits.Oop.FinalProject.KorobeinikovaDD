@@ -1,9 +1,12 @@
-﻿@using System.Linq﻿
+﻿@using System.Linq
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
 
 @page "/courses"
-
+@attribute [Authorize]
 @using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Models
 @inject ICourseService data
+@inject AuthenticationStateProvider AuthStateProvider
 @rendermode InteractiveServer
 
 <PageTitle>Курсы</PageTitle>
@@ -13,39 +16,48 @@
 <div class="container">
     @if (courses == null)
     {
-        <tr>
-            <td colspan="5">Loading ...</td>
-        </tr>
+        <p><em>Загрузка...</em></p>
     }
     else
     {
+        <div class="row gx-3">
             @foreach (var course in courses)
             {
-                <div class="card">
-                    <div class="card-header">
-                        @course.Name
-                    </div>
-                    <div class="card-body">
-                        <p>@course.Description</p>
-                    </div>
+                <div class="col-12 col-md-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            @course.Name
+                        </div>
+                        <div class="card-body">
+                            <p>@course.Description</p>
+                        </div>
 
-                    <div class="card-footer">
-                        <a class="btn btn-detail" href="lessons/@course.Id">Подробнее</a>
-                        <a class="btn btn-edit" href="courseform/@course.Id">Изменить</a>
-                        <button class="btn btn-danger" @onclick="async () => await DeleteTask(course.Id)">Удалить</button>
-                    </div>
+                        <div class="card-footer">
+                            <a class="btn btn-detail" href="lessons/@course.Id">Подробнее</a>
 
+                            <AuthorizeView Roles="Teacher">
+                                <Authorized>
+                                    <a class="btn btn-edit ms-2" href="courseform/@course.Id">Изменить</a>
+                                    <button class="btn btn-danger ms-2" @onclick="async () => await DeleteTask(course.Id)">Удалить</button>
+                                </Authorized>
+                            </AuthorizeView>
+                        </div>
+                    </div>
                 </div>
             }
+        </div>
 
         <div class="btn-group m-2">
-            <a class="btn btn-edit" href="courseform/add">Создать новый курс</a>
+            <AuthorizeView Roles="Teacher">
+                <Authorized>
+                    <a class="btn btn-edit" href="courseform/add">Создать новый курс</a>
+                </Authorized>
+            </AuthorizeView>
         </div>
     }
 </div>
 
 @code {
-
     IEnumerable<Course>? courses;
 
     protected override async Task OnInitializedAsync()
@@ -56,7 +68,15 @@
 
     async Task DeleteTask(int id)
     {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user?.Identity == null || !user.Identity.IsAuthenticated || !user.IsInRole("Teacher"))
+        {
+            return;
+        }
+
         await data.DeleteAsync(id);
         courses = await data.GetTaskItemsAsync();
     }
 }
+

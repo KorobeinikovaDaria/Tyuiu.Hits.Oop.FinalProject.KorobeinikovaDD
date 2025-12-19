@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data;
 
@@ -11,9 +12,11 @@ using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data;
 namespace Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251218104843_Add-Migration -Name add_test")]
+    partial class AddMigrationNameadd_test
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -368,7 +371,8 @@ namespace Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CourseId");
+                    b.HasIndex("CourseId")
+                        .IsUnique();
 
                     b.ToTable("Tests");
                 });
@@ -438,8 +442,8 @@ namespace Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Migrations
             modelBuilder.Entity("Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Models.Tests", b =>
                 {
                     b.HasOne("Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Models.Course", "Course")
-                        .WithMany("Tests")
-                        .HasForeignKey("CourseId")
+                        .WithOne("Tests")
+                        .HasForeignKey("Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Models.Tests", "CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

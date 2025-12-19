@@ -14,8 +14,4 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.19" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Components\Pages\NewFolder\" />
-  </ItemGroup>
-
 </Project>

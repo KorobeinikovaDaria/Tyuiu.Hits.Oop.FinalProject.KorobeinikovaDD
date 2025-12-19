@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Components.Pages;
 using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Models;
 
 namespace Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data
@@ -14,12 +15,19 @@ namespace Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data
         public DbSet<Course> Courses { get; set; }
         public DbSet<Lesson> Lessons { get; set; }
 
+        public DbSet<Tests> Tests { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder); 
+            base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Course>()
                 .HasMany(c => c.Lessons)
+                .WithOne(l => l.Course)
+                .HasForeignKey(l => l.CourseId);
+
+            modelBuilder.Entity<Course>()
+                .HasMany(c => c.Tests)
                 .WithOne(l => l.Course)
                 .HasForeignKey(l => l.CourseId);
 
@@ -38,6 +46,7 @@ namespace Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data
                 new Lesson { Id = 6, Title = "Урок 6", Content = "Содержание урока", CourseId = 3 }
             );
         }
+
     }
 
 }

@@ -11,7 +11,6 @@ namespace Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Services
         {
             return await context.Courses.ToArrayAsync();
         }
-
         public async Task SaveAsync(Course item)
         {
             if (item.Id == 0)

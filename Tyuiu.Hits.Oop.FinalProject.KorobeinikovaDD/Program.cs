@@ -1,27 +1,21 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Cors.Infrastructure;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System;
 using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Components;
 using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Components.Account;
 using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data;
 using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Interfaces;
 using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Data.Services;
 using Tyuiu.Hits.Oop.FinalProject.KorobeinikovaDD.Services;
-using static ICourseService;
 
 public class Program
 {
-    
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
@@ -37,10 +31,10 @@ public class Program
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(connectionString));
 
-
         // –егистраци€ сервисов приложени€
         builder.Services.AddScoped<ICourseService, CourseService>();
         builder.Services.AddScoped<ILessonService, LessonService>();
+        builder.Services.AddScoped<ITestService, TestService>();
 
         builder.Services.AddCascadingAuthenticationState();
         builder.Services.AddScoped<IdentityUserAccessor>();
@@ -56,7 +50,9 @@ public class Program
 
         builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+        // <-- ¬ажно: добавл€ем поддержку ролей
         builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            .AddRoles<IdentityRole>() // <-- добавлено
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddSignInManager()
             .AddDefaultTokenProviders();
@@ -73,12 +69,57 @@ public class Program
             {
                 var db = services.GetRequiredService<ApplicationDbContext>();
                 db.Database.Migrate(); // примен€ет все миграции
+
+                // ---- ѕосев ролей и тестовых пользователей ----
+                var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+                var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+                string[] roles = new[] { "Teacher", "Student" };
+
+                foreach (var role in roles)
+                {
+                    if (!await roleManager.RoleExistsAsync(role))
+                        await roleManager.CreateAsync(new IdentityRole(role));
+                }
+
+                async Task CreateUserIfNotExists(string email, string password, string role)
+                {
+                    var user = await userManager.FindByEmailAsync(email);
+                    if (user == null)
+                    {
+                        user = new ApplicationUser
+                        {
+                            UserName = email,
+                            Email = email,
+                            EmailConfirmed = true
+                        };
+                        var res = await userManager.CreateAsync(user, password);
+                        if (res.Succeeded)
+                        {
+                            await userManager.AddToRoleAsync(user, role);
+                        }
+                        else
+                        {
+                            var logger = services.GetRequiredService<ILogger<Program>>();
+                            logger.LogWarning("ќшибка при создании пользовател€ {Email}: {Errors}", email, string.Join(", ", res.Errors.Select(e => e.Description)));
+                        }
+                    }
+                    else
+                    {
+                        if (!await userManager.IsInRoleAsync(user, role))
+                            await userManager.AddToRoleAsync(user, role);
+                    }
+                }
+
+                // ѕароли в примере простые Ч дл€ учебного проекта допустимо, в реальном Ч сильные пароли и безопасное хранение
+                await CreateUserIfNotExists("teacher@example.com", "Password123!", "Teacher");
+                await CreateUserIfNotExists("student@example.com", "Password123!", "Student");
+                // ----------------------------------------------
             }
             catch (Exception ex)
             {
                 var logger = services.GetRequiredService<ILogger<Program>>();
                 logger.LogError(ex, "An error occurred while migrating or seeding the database.");
-                // «десь можно решать, нужно ли прервать запуск:
+                // при необходимости можно пробросить исключение
                 // throw;
             }
         }
